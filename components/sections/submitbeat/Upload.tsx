@@ -3,7 +3,9 @@
 import SectionContainer from "@/components/SectionContainer/SectionContainer";
 import SectionHeading from "@/components/SectionHeading/SectionHeading";
 import ValidationAlert from "@/components/ValidationAlert/ValidationAlert";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, SubmitEvent } from "react";
+
+console.log(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 export default function Upload() {
   const [alert, setAlert] = useState<{
@@ -40,7 +42,7 @@ export default function Upload() {
       setAlert({ message: "File uploaded successfully", type: "success" });
     }
   }
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log("Form submitted");
   }
