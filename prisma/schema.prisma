@@ -7,16 +7,56 @@ datasource db {
   provider = "postgresql"
 }
 
+model Battle {
+  id                String       @id @default(cuid())
+  title             String
+  slug              String       @unique
+  description       String?
+  status            BattleStatus @default(open)
+  startsAt          DateTime?
+  endsAt            DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  hiddenFromHistory Boolean      @default(false)
+
+  submissions Submission[]
+  votes       Vote[]
+}
+
 model Submission {
   id        String   @id @default(cuid())
   userId    String
+  username  String?
   battleId  String
   fileKey   String   @unique
   fileUrl   String
   fileName  String
   fileSize  Int
   mimeType  String
+  placement Int?
   createdAt DateTime @default(now())
 
+  battle Battle @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  votes  Vote[]
+
   @@unique([userId, battleId])
+}
+
+model Vote {
+  id           String   @id @default(cuid())
+  userId       String
+  battleId     String
+  submissionId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  battle     Battle     @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, battleId])
+}
+
+enum BattleStatus {
+  open
+  closed
 }

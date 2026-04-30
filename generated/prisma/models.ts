@@ -8,5 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Battle'
 export type * from './models/Submission'
+export type * from './models/Vote'
 export type * from './commonInputTypes'

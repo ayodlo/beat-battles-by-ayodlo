@@ -2,24 +2,67 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
+
+const adminUserIds =
+  process.env.NEXT_PUBLIC_ADMIN_USER_IDS?.split(",").map((id) => id.trim()) ??
+  [];
+
+const navLinks = [
+  {
+    href: "/",
+    label: "Home",
+  },
+  {
+    href: "/submit",
+    label: "Battle",
+    signedInOnly: true,
+  },
+  {
+    href: "/past-battles",
+    label: "Past Battles",
+  },
+];
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const { user } = useUser();
 
-  const closeMenu = () => setIsOpen(false);
+  const isAdmin = user ? adminUserIds.includes(user.id) : false;
+
+  function closeMenu() {
+    setIsOpen(false);
+  }
+
+  function getLinkClass(href: string) {
+    const isActive = pathname === href;
+
+    return [
+      "text-sm font-medium transition",
+      isActive ? "text-black" : "text-neutral-500 hover:text-black",
+    ].join(" ");
+  }
 
   return (
-    <nav className="w-full bg-white">
-      <div className="flex w-full items-center justify-between px-10 py-6">
-        <Link href="/" onClick={closeMenu}>
+    <nav className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        <Link href="/" onClick={closeMenu} aria-label="Producer Battles home">
           <Image
             src="/assets/images/producer_battles_transparent.png"
             alt="Producer Battles logo"
-            width={50}
-            height={50}
-            className="h-auto w-auto"
+            width={64}
+            height={64}
+            priority
+            className="h-auto w-16"
           />
         </Link>
 
@@ -28,90 +71,140 @@ export default function Navigation() {
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
-          className="flex h-10 items-center justify-center p-0 md:hidden"
+          className="flex items-center justify-center text-3xl leading-none transition hover:text-neutral-500 md:hidden"
         >
-          <span className="text-3xl leading-none">{isOpen ? "×" : "☰"}</span>
+          {isOpen ? "×" : "☰"}
         </button>
 
-        <div className="hidden items-center gap-6 md:flex">
-          <Link href="/">Weekly battle</Link>
-          <Link href="/about">Past battles</Link>
-          <Link href="/browse">Browse beats</Link>
-          <Link href="/more">More</Link>
+        <div className="hidden items-center gap-7 md:flex">
+          {navLinks.map((link) => {
+            if (link.signedInOnly) {
+              return (
+                <Show key={link.href} when="signed-in">
+                  <Link href={link.href} className={getLinkClass(link.href)}>
+                    {link.label}
+                  </Link>
+                </Show>
+              );
+            }
 
-          <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button type="button" className="text-black">
-                Sign in
-              </button>
-            </SignInButton>
-
-            <SignUpButton mode="modal">
-              <button type="button" className="border border-black px-4 py-2">
-                Join
-              </button>
-            </SignUpButton>
-          </Show>
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={getLinkClass(link.href)}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
           <Show when="signed-in">
-            <Link href="/upload">Submit</Link>
-            <UserButton afterSignOutUrl="/" />
+            {isAdmin ? (
+              <Link href="/admin" className={getLinkClass("/admin")}>
+                Admin
+              </Link>
+            ) : null}
+
+            <UserButton />
+          </Show>
+
+          <Show when="signed-out">
+            <div className="flex items-center gap-3">
+              <SignInButton mode="modal">
+                <button
+                  type="button"
+                  className="text-sm font-medium text-neutral-500 transition hover:text-black"
+                >
+                  Sign in
+                </button>
+              </SignInButton>
+
+              <SignUpButton mode="modal">
+                <button
+                  type="button"
+                  className="rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800"
+                >
+                  Join
+                </button>
+              </SignUpButton>
+            </div>
           </Show>
         </div>
       </div>
 
-      {isOpen && (
-        <div className="flex flex-col gap-4 px-4 pb-4 md:hidden">
-          <div className="flex flex-col gap-4 px-2">
-            <Link href="/" onClick={closeMenu}>
-              Weekly battle
-            </Link>
-            <Link href="/about" onClick={closeMenu}>
-              Past battles
-            </Link>
-            <Link href="/browse" onClick={closeMenu}>
-              Browse beats
-            </Link>
-            <Link href="/more" onClick={closeMenu}>
-              More
-            </Link>
+      {isOpen ? (
+        <div className="border-t border-neutral-200 bg-white px-6 py-5 md:hidden">
+          <div className="flex flex-col gap-4">
+            {navLinks.map((link) => {
+              if (link.signedInOnly) {
+                return (
+                  <Show key={link.href} when="signed-in">
+                    <Link
+                      href={link.href}
+                      onClick={closeMenu}
+                      className={getLinkClass(link.href)}
+                    >
+                      {link.label}
+                    </Link>
+                  </Show>
+                );
+              }
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className={getLinkClass(link.href)}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
 
             <Show when="signed-in">
-              <Link href="/submit" onClick={closeMenu}>
-                Submit
-              </Link>
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  onClick={closeMenu}
+                  className={getLinkClass("/admin")}
+                >
+                  Admin
+                </Link>
+              ) : null}
+
+              <div className="pt-2">
+                <UserButton />
+              </div>
+            </Show>
+
+            <Show when="signed-out">
+              <div className="flex flex-col gap-3 pt-2">
+                <SignInButton mode="modal">
+                  <button
+                    type="button"
+                    onClick={closeMenu}
+                    className="rounded-full border border-neutral-300 px-5 py-3 text-sm font-semibold text-black transition hover:bg-neutral-100"
+                  >
+                    Sign in
+                  </button>
+                </SignInButton>
+
+                <SignUpButton mode="modal">
+                  <button
+                    type="button"
+                    onClick={closeMenu}
+                    className="rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
+                  >
+                    Join
+                  </button>
+                </SignUpButton>
+              </div>
             </Show>
           </div>
-
-          <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button
-                type="button"
-                onClick={closeMenu}
-                className="min-w-22 self-start whitespace-nowrap rounded-md border border-gray-500 bg-white px-4 py-2 text-center text-black transition hover:bg-black hover:text-white"
-              >
-                Sign in
-              </button>
-            </SignInButton>
-
-            <SignUpButton mode="modal">
-              <button
-                type="button"
-                onClick={closeMenu}
-                className="min-w-22 self-start whitespace-nowrap rounded-md border border-gray-500 bg-black px-4 py-2 text-center text-white transition hover:bg-white hover:text-black"
-              >
-                Join
-              </button>
-            </SignUpButton>
-          </Show>
-
-          <Show when="signed-in">
-            <div className="px-2">
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          </Show>
         </div>
-      )}
+      ) : null}
     </nav>
   );
 }

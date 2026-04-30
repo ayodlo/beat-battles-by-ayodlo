@@ -28,45 +28,53 @@ export type AggregateSubmission = {
 
 export type SubmissionAvgAggregateOutputType = {
   fileSize: number | null
+  placement: number | null
 }
 
 export type SubmissionSumAggregateOutputType = {
   fileSize: number | null
+  placement: number | null
 }
 
 export type SubmissionMinAggregateOutputType = {
   id: string | null
   userId: string | null
+  username: string | null
   battleId: string | null
   fileKey: string | null
   fileUrl: string | null
   fileName: string | null
   fileSize: number | null
   mimeType: string | null
+  placement: number | null
   createdAt: Date | null
 }
 
 export type SubmissionMaxAggregateOutputType = {
   id: string | null
   userId: string | null
+  username: string | null
   battleId: string | null
   fileKey: string | null
   fileUrl: string | null
   fileName: string | null
   fileSize: number | null
   mimeType: string | null
+  placement: number | null
   createdAt: Date | null
 }
 
 export type SubmissionCountAggregateOutputType = {
   id: number
   userId: number
+  username: number
   battleId: number
   fileKey: number
   fileUrl: number
   fileName: number
   fileSize: number
   mimeType: number
+  placement: number
   createdAt: number
   _all: number
 }
@@ -74,45 +82,53 @@ export type SubmissionCountAggregateOutputType = {
 
 export type SubmissionAvgAggregateInputType = {
   fileSize?: true
+  placement?: true
 }
 
 export type SubmissionSumAggregateInputType = {
   fileSize?: true
+  placement?: true
 }
 
 export type SubmissionMinAggregateInputType = {
   id?: true
   userId?: true
+  username?: true
   battleId?: true
   fileKey?: true
   fileUrl?: true
   fileName?: true
   fileSize?: true
   mimeType?: true
+  placement?: true
   createdAt?: true
 }
 
 export type SubmissionMaxAggregateInputType = {
   id?: true
   userId?: true
+  username?: true
   battleId?: true
   fileKey?: true
   fileUrl?: true
   fileName?: true
   fileSize?: true
   mimeType?: true
+  placement?: true
   createdAt?: true
 }
 
 export type SubmissionCountAggregateInputType = {
   id?: true
   userId?: true
+  username?: true
   battleId?: true
   fileKey?: true
   fileUrl?: true
   fileName?: true
   fileSize?: true
   mimeType?: true
+  placement?: true
   createdAt?: true
   _all?: true
 }
@@ -206,12 +222,14 @@ export type SubmissionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type SubmissionGroupByOutputType = {
   id: string
   userId: string
+  username: string | null
   battleId: string
   fileKey: string
   fileUrl: string
   fileName: string
   fileSize: number
   mimeType: string
+  placement: number | null
   createdAt: Date
   _count: SubmissionCountAggregateOutputType | null
   _avg: SubmissionAvgAggregateOutputType | null
@@ -241,25 +259,33 @@ export type SubmissionWhereInput = {
   NOT?: Prisma.SubmissionWhereInput | Prisma.SubmissionWhereInput[]
   id?: Prisma.StringFilter<"Submission"> | string
   userId?: Prisma.StringFilter<"Submission"> | string
+  username?: Prisma.StringNullableFilter<"Submission"> | string | null
   battleId?: Prisma.StringFilter<"Submission"> | string
   fileKey?: Prisma.StringFilter<"Submission"> | string
   fileUrl?: Prisma.StringFilter<"Submission"> | string
   fileName?: Prisma.StringFilter<"Submission"> | string
   fileSize?: Prisma.IntFilter<"Submission"> | number
   mimeType?: Prisma.StringFilter<"Submission"> | string
+  placement?: Prisma.IntNullableFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  battle?: Prisma.XOR<Prisma.BattleScalarRelationFilter, Prisma.BattleWhereInput>
+  votes?: Prisma.VoteListRelationFilter
 }
 
 export type SubmissionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
   battleId?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   fileUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
+  placement?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  battle?: Prisma.BattleOrderByWithRelationInput
+  votes?: Prisma.VoteOrderByRelationAggregateInput
 }
 
 export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
@@ -270,23 +296,29 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SubmissionWhereInput[]
   NOT?: Prisma.SubmissionWhereInput | Prisma.SubmissionWhereInput[]
   userId?: Prisma.StringFilter<"Submission"> | string
+  username?: Prisma.StringNullableFilter<"Submission"> | string | null
   battleId?: Prisma.StringFilter<"Submission"> | string
   fileUrl?: Prisma.StringFilter<"Submission"> | string
   fileName?: Prisma.StringFilter<"Submission"> | string
   fileSize?: Prisma.IntFilter<"Submission"> | number
   mimeType?: Prisma.StringFilter<"Submission"> | string
+  placement?: Prisma.IntNullableFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  battle?: Prisma.XOR<Prisma.BattleScalarRelationFilter, Prisma.BattleWhereInput>
+  votes?: Prisma.VoteListRelationFilter
 }, "id" | "fileKey" | "userId_battleId">
 
 export type SubmissionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
   battleId?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   fileUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
+  placement?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.SubmissionCountOrderByAggregateInput
   _avg?: Prisma.SubmissionAvgOrderByAggregateInput
@@ -301,97 +333,126 @@ export type SubmissionScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SubmissionScalarWhereWithAggregatesInput | Prisma.SubmissionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  username?: Prisma.StringNullableWithAggregatesFilter<"Submission"> | string | null
   battleId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   fileKey?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   fileUrl?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   fileName?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   fileSize?: Prisma.IntWithAggregatesFilter<"Submission"> | number
   mimeType?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  placement?: Prisma.IntNullableWithAggregatesFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Submission"> | Date | string
 }
 
 export type SubmissionCreateInput = {
   id?: string
   userId: string
-  battleId: string
+  username?: string | null
   fileKey: string
   fileUrl: string
   fileName: string
   fileSize: number
   mimeType: string
+  placement?: number | null
   createdAt?: Date | string
+  battle: Prisma.BattleCreateNestedOneWithoutSubmissionsInput
+  votes?: Prisma.VoteCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUncheckedCreateInput = {
   id?: string
   userId: string
+  username?: string | null
   battleId: string
   fileKey: string
   fileUrl: string
   fileName: string
   fileSize: number
   mimeType: string
+  placement?: number | null
   createdAt?: Date | string
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
 export type SubmissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  battleId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.IntFieldUpdateOperationsInput | number
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  battle?: Prisma.BattleUpdateOneRequiredWithoutSubmissionsNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   battleId?: Prisma.StringFieldUpdateOperationsInput | string
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.IntFieldUpdateOperationsInput | number
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
 export type SubmissionCreateManyInput = {
   id?: string
   userId: string
+  username?: string | null
   battleId: string
   fileKey: string
   fileUrl: string
   fileName: string
   fileSize: number
   mimeType: string
+  placement?: number | null
   createdAt?: Date | string
 }
 
 export type SubmissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  battleId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.IntFieldUpdateOperationsInput | number
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SubmissionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   battleId?: Prisma.StringFieldUpdateOperationsInput | string
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.IntFieldUpdateOperationsInput | number
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SubmissionListRelationFilter = {
+  every?: Prisma.SubmissionWhereInput
+  some?: Prisma.SubmissionWhereInput
+  none?: Prisma.SubmissionWhereInput
+}
+
+export type SubmissionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type SubmissionUserIdBattleIdCompoundUniqueInput = {
@@ -402,49 +463,100 @@ export type SubmissionUserIdBattleIdCompoundUniqueInput = {
 export type SubmissionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  username?: Prisma.SortOrder
   battleId?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   fileUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
+  placement?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type SubmissionAvgOrderByAggregateInput = {
   fileSize?: Prisma.SortOrder
+  placement?: Prisma.SortOrder
 }
 
 export type SubmissionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  username?: Prisma.SortOrder
   battleId?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   fileUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
+  placement?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type SubmissionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  username?: Prisma.SortOrder
   battleId?: Prisma.SortOrder
   fileKey?: Prisma.SortOrder
   fileUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
+  placement?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type SubmissionSumOrderByAggregateInput = {
   fileSize?: Prisma.SortOrder
+  placement?: Prisma.SortOrder
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type SubmissionScalarRelationFilter = {
+  is?: Prisma.SubmissionWhereInput
+  isNot?: Prisma.SubmissionWhereInput
+}
+
+export type SubmissionCreateNestedManyWithoutBattleInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput> | Prisma.SubmissionCreateWithoutBattleInput[] | Prisma.SubmissionUncheckedCreateWithoutBattleInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBattleInput | Prisma.SubmissionCreateOrConnectWithoutBattleInput[]
+  createMany?: Prisma.SubmissionCreateManyBattleInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUncheckedCreateNestedManyWithoutBattleInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput> | Prisma.SubmissionCreateWithoutBattleInput[] | Prisma.SubmissionUncheckedCreateWithoutBattleInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBattleInput | Prisma.SubmissionCreateOrConnectWithoutBattleInput[]
+  createMany?: Prisma.SubmissionCreateManyBattleInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUpdateManyWithoutBattleNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput> | Prisma.SubmissionCreateWithoutBattleInput[] | Prisma.SubmissionUncheckedCreateWithoutBattleInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBattleInput | Prisma.SubmissionCreateOrConnectWithoutBattleInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutBattleInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutBattleInput[]
+  createMany?: Prisma.SubmissionCreateManyBattleInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutBattleInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutBattleInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutBattleInput | Prisma.SubmissionUpdateManyWithWhereWithoutBattleInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+}
+
+export type SubmissionUncheckedUpdateManyWithoutBattleNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput> | Prisma.SubmissionCreateWithoutBattleInput[] | Prisma.SubmissionUncheckedCreateWithoutBattleInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutBattleInput | Prisma.SubmissionCreateOrConnectWithoutBattleInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutBattleInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutBattleInput[]
+  createMany?: Prisma.SubmissionCreateManyBattleInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutBattleInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutBattleInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutBattleInput | Prisma.SubmissionUpdateManyWithWhereWithoutBattleInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -455,74 +567,347 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
+export type SubmissionCreateNestedOneWithoutVotesInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutVotesInput, Prisma.SubmissionUncheckedCreateWithoutVotesInput>
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutVotesInput
+  connect?: Prisma.SubmissionWhereUniqueInput
+}
+
+export type SubmissionUpdateOneRequiredWithoutVotesNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutVotesInput, Prisma.SubmissionUncheckedCreateWithoutVotesInput>
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutVotesInput
+  upsert?: Prisma.SubmissionUpsertWithoutVotesInput
+  connect?: Prisma.SubmissionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubmissionUpdateToOneWithWhereWithoutVotesInput, Prisma.SubmissionUpdateWithoutVotesInput>, Prisma.SubmissionUncheckedUpdateWithoutVotesInput>
+}
+
+export type SubmissionCreateWithoutBattleInput = {
+  id?: string
+  userId: string
+  username?: string | null
+  fileKey: string
+  fileUrl: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+  placement?: number | null
+  createdAt?: Date | string
+  votes?: Prisma.VoteCreateNestedManyWithoutSubmissionInput
+}
+
+export type SubmissionUncheckedCreateWithoutBattleInput = {
+  id?: string
+  userId: string
+  username?: string | null
+  fileKey: string
+  fileUrl: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+  placement?: number | null
+  createdAt?: Date | string
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSubmissionInput
+}
+
+export type SubmissionCreateOrConnectWithoutBattleInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput>
+}
+
+export type SubmissionCreateManyBattleInputEnvelope = {
+  data: Prisma.SubmissionCreateManyBattleInput | Prisma.SubmissionCreateManyBattleInput[]
+  skipDuplicates?: boolean
+}
+
+export type SubmissionUpsertWithWhereUniqueWithoutBattleInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutBattleInput, Prisma.SubmissionUncheckedUpdateWithoutBattleInput>
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutBattleInput, Prisma.SubmissionUncheckedCreateWithoutBattleInput>
+}
+
+export type SubmissionUpdateWithWhereUniqueWithoutBattleInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutBattleInput, Prisma.SubmissionUncheckedUpdateWithoutBattleInput>
+}
+
+export type SubmissionUpdateManyWithWhereWithoutBattleInput = {
+  where: Prisma.SubmissionScalarWhereInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutBattleInput>
+}
+
+export type SubmissionScalarWhereInput = {
+  AND?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+  OR?: Prisma.SubmissionScalarWhereInput[]
+  NOT?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+  id?: Prisma.StringFilter<"Submission"> | string
+  userId?: Prisma.StringFilter<"Submission"> | string
+  username?: Prisma.StringNullableFilter<"Submission"> | string | null
+  battleId?: Prisma.StringFilter<"Submission"> | string
+  fileKey?: Prisma.StringFilter<"Submission"> | string
+  fileUrl?: Prisma.StringFilter<"Submission"> | string
+  fileName?: Prisma.StringFilter<"Submission"> | string
+  fileSize?: Prisma.IntFilter<"Submission"> | number
+  mimeType?: Prisma.StringFilter<"Submission"> | string
+  placement?: Prisma.IntNullableFilter<"Submission"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+}
+
+export type SubmissionCreateWithoutVotesInput = {
+  id?: string
+  userId: string
+  username?: string | null
+  fileKey: string
+  fileUrl: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+  placement?: number | null
+  createdAt?: Date | string
+  battle: Prisma.BattleCreateNestedOneWithoutSubmissionsInput
+}
+
+export type SubmissionUncheckedCreateWithoutVotesInput = {
+  id?: string
+  userId: string
+  username?: string | null
+  battleId: string
+  fileKey: string
+  fileUrl: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+  placement?: number | null
+  createdAt?: Date | string
+}
+
+export type SubmissionCreateOrConnectWithoutVotesInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutVotesInput, Prisma.SubmissionUncheckedCreateWithoutVotesInput>
+}
+
+export type SubmissionUpsertWithoutVotesInput = {
+  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutVotesInput, Prisma.SubmissionUncheckedUpdateWithoutVotesInput>
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutVotesInput, Prisma.SubmissionUncheckedCreateWithoutVotesInput>
+  where?: Prisma.SubmissionWhereInput
+}
+
+export type SubmissionUpdateToOneWithWhereWithoutVotesInput = {
+  where?: Prisma.SubmissionWhereInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutVotesInput, Prisma.SubmissionUncheckedUpdateWithoutVotesInput>
+}
+
+export type SubmissionUpdateWithoutVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileKey?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  battle?: Prisma.BattleUpdateOneRequiredWithoutSubmissionsNestedInput
+}
+
+export type SubmissionUncheckedUpdateWithoutVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  battleId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileKey?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SubmissionCreateManyBattleInput = {
+  id?: string
+  userId: string
+  username?: string | null
+  fileKey: string
+  fileUrl: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+  placement?: number | null
+  createdAt?: Date | string
+}
+
+export type SubmissionUpdateWithoutBattleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileKey?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  votes?: Prisma.VoteUpdateManyWithoutSubmissionNestedInput
+}
+
+export type SubmissionUncheckedUpdateWithoutBattleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileKey?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutSubmissionNestedInput
+}
+
+export type SubmissionUncheckedUpdateManyWithoutBattleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileKey?: Prisma.StringFieldUpdateOperationsInput | string
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  placement?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type SubmissionCountOutputType
+ */
+
+export type SubmissionCountOutputType = {
+  votes: number
+}
+
+export type SubmissionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  votes?: boolean | SubmissionCountOutputTypeCountVotesArgs
+}
+
+/**
+ * SubmissionCountOutputType without action
+ */
+export type SubmissionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SubmissionCountOutputType
+   */
+  select?: Prisma.SubmissionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * SubmissionCountOutputType without action
+ */
+export type SubmissionCountOutputTypeCountVotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VoteWhereInput
+}
 
 
 export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  username?: boolean
   battleId?: boolean
   fileKey?: boolean
   fileUrl?: boolean
   fileName?: boolean
   fileSize?: boolean
   mimeType?: boolean
+  placement?: boolean
   createdAt?: boolean
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
+  votes?: boolean | Prisma.Submission$votesArgs<ExtArgs>
+  _count?: boolean | Prisma.SubmissionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  username?: boolean
   battleId?: boolean
   fileKey?: boolean
   fileUrl?: boolean
   fileName?: boolean
   fileSize?: boolean
   mimeType?: boolean
+  placement?: boolean
   createdAt?: boolean
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  username?: boolean
   battleId?: boolean
   fileKey?: boolean
   fileUrl?: boolean
   fileName?: boolean
   fileSize?: boolean
   mimeType?: boolean
+  placement?: boolean
   createdAt?: boolean
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectScalar = {
   id?: boolean
   userId?: boolean
+  username?: boolean
   battleId?: boolean
   fileKey?: boolean
   fileUrl?: boolean
   fileName?: boolean
   fileSize?: boolean
   mimeType?: boolean
+  placement?: boolean
   createdAt?: boolean
 }
 
-export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "battleId" | "fileKey" | "fileUrl" | "fileName" | "fileSize" | "mimeType" | "createdAt", ExtArgs["result"]["submission"]>
+export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "username" | "battleId" | "fileKey" | "fileUrl" | "fileName" | "fileSize" | "mimeType" | "placement" | "createdAt", ExtArgs["result"]["submission"]>
+export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
+  votes?: boolean | Prisma.Submission$votesArgs<ExtArgs>
+  _count?: boolean | Prisma.SubmissionCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type SubmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
+}
+export type SubmissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  battle?: boolean | Prisma.BattleDefaultArgs<ExtArgs>
+}
 
 export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Submission"
-  objects: {}
+  objects: {
+    battle: Prisma.$BattlePayload<ExtArgs>
+    votes: Prisma.$VotePayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
+    username: string | null
     battleId: string
     fileKey: string
     fileUrl: string
     fileName: string
     fileSize: number
     mimeType: string
+    placement: number | null
     createdAt: Date
   }, ExtArgs["result"]["submission"]>
   composites: {}
@@ -918,6 +1303,8 @@ readonly fields: SubmissionFieldRefs;
  */
 export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  battle<T extends Prisma.BattleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BattleDefaultArgs<ExtArgs>>): Prisma.Prisma__BattleClient<runtime.Types.Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  votes<T extends Prisma.Submission$votesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$votesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -949,12 +1336,14 @@ export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runti
 export interface SubmissionFieldRefs {
   readonly id: Prisma.FieldRef<"Submission", 'String'>
   readonly userId: Prisma.FieldRef<"Submission", 'String'>
+  readonly username: Prisma.FieldRef<"Submission", 'String'>
   readonly battleId: Prisma.FieldRef<"Submission", 'String'>
   readonly fileKey: Prisma.FieldRef<"Submission", 'String'>
   readonly fileUrl: Prisma.FieldRef<"Submission", 'String'>
   readonly fileName: Prisma.FieldRef<"Submission", 'String'>
   readonly fileSize: Prisma.FieldRef<"Submission", 'Int'>
   readonly mimeType: Prisma.FieldRef<"Submission", 'String'>
+  readonly placement: Prisma.FieldRef<"Submission", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Submission", 'DateTime'>
 }
     
@@ -972,6 +1361,10 @@ export type SubmissionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
   /**
    * Filter, which Submission to fetch.
    */
@@ -991,6 +1384,10 @@ export type SubmissionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  /**
    * Filter, which Submission to fetch.
    */
   where: Prisma.SubmissionWhereUniqueInput
@@ -1008,6 +1405,10 @@ export type SubmissionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
   /**
    * Filter, which Submission to fetch.
    */
@@ -1057,6 +1458,10 @@ export type SubmissionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  /**
    * Filter, which Submission to fetch.
    */
   where?: Prisma.SubmissionWhereInput
@@ -1104,6 +1509,10 @@ export type SubmissionFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
   /**
    * Filter, which Submissions to fetch.
    */
@@ -1153,6 +1562,10 @@ export type SubmissionCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  /**
    * The data needed to create a Submission.
    */
   data: Prisma.XOR<Prisma.SubmissionCreateInput, Prisma.SubmissionUncheckedCreateInput>
@@ -1186,6 +1599,10 @@ export type SubmissionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    */
   data: Prisma.SubmissionCreateManyInput | Prisma.SubmissionCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1200,6 +1617,10 @@ export type SubmissionUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
   /**
    * The data needed to update a Submission.
    */
@@ -1252,6 +1673,10 @@ export type SubmissionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many Submissions to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1266,6 +1691,10 @@ export type SubmissionUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
   /**
    * The filter to search for the Submission to update in case it exists.
    */
@@ -1293,6 +1722,10 @@ export type SubmissionDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  /**
    * Filter which Submission to delete.
    */
   where: Prisma.SubmissionWhereUniqueInput
@@ -1313,6 +1746,30 @@ export type SubmissionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * Submission.votes
+ */
+export type Submission$votesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Vote
+   */
+  select?: Prisma.VoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Vote
+   */
+  omit?: Prisma.VoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VoteInclude<ExtArgs> | null
+  where?: Prisma.VoteWhereInput
+  orderBy?: Prisma.VoteOrderByWithRelationInput | Prisma.VoteOrderByWithRelationInput[]
+  cursor?: Prisma.VoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VoteScalarFieldEnum | Prisma.VoteScalarFieldEnum[]
+}
+
+/**
  * Submission without action
  */
 export type SubmissionDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1324,4 +1781,8 @@ export type SubmissionDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Submission
    */
   omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
 }

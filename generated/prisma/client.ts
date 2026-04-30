@@ -31,8 +31,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Submissions
- * const submissions = await prisma.submission.findMany()
+ * // Fetch zero or more Battles
+ * const battles = await prisma.battle.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,7 +42,17 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
+ * Model Battle
+ * 
+ */
+export type Battle = Prisma.BattleModel
+/**
  * Model Submission
  * 
  */
 export type Submission = Prisma.SubmissionModel
+/**
+ * Model Vote
+ * 
+ */
+export type Vote = Prisma.VoteModel

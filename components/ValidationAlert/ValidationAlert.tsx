@@ -7,7 +7,7 @@ export default function ValidationAlert({
   message: string;
   type: "error" | "success";
 }) {
-  const textColor = type === "error" ? "text-red-500" : "text-green-500";
+  // const textColor = type === "error" ? "text-red-500" : "text-green-500";
   const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
   const borderColor = type === "error" ? "border-red-500" : "border-green-500";
   const icon =
@@ -19,8 +19,10 @@ export default function ValidationAlert({
   return (
     <div aria-live="assertive" aria-atomic="true">
       <div className={`${bgColor} ${borderColor} p-2 rounded-md`}>
-        <p className={`text-sm ${textColor}`}>{message}</p>
-        {icon}
+        <p className="text-sm flex items-center gap-2">
+          {icon}
+          <span>{message}</span>
+        </p>
       </div>
     </div>
   );

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Your App Name",
-  description: "Your app description",
+  title: "Producer Battles",
+  description: "Beat battles for producers.",
 };
 
 export default function RootLayout({
@@ -32,9 +32,13 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Navigation />
-          {children}
-          <Footer />
+          <div className="flex min-h-screen flex-col">
+            <Navigation />
+
+            <div className="flex-1">{children}</div>
+
+            <Footer />
+          </div>
         </body>
       </html>
     </ClerkProvider>
