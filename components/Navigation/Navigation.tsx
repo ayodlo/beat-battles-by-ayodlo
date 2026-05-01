@@ -11,25 +11,16 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 const adminUserIds =
   process.env.NEXT_PUBLIC_ADMIN_USER_IDS?.split(",").map((id) => id.trim()) ??
   [];
 
 const navLinks = [
-  {
-    href: "/",
-    label: "Home",
-  },
-  {
-    href: "/submit",
-    label: "Battle",
-    signedInOnly: true,
-  },
-  {
-    href: "/past-battles",
-    label: "Past Battles",
-  },
+  { href: "/", label: "Home" },
+  { href: "/submit", label: "Battle", signedInOnly: true },
+  { href: "/past-battles", label: "Past Battles" },
 ];
 
 export default function Navigation() {
@@ -48,12 +39,14 @@ export default function Navigation() {
 
     return [
       "text-sm font-medium transition",
-      isActive ? "text-black" : "text-neutral-500 hover:text-black",
+      isActive
+        ? "text-foreground"
+        : "text-muted-foreground hover:text-foreground",
     ].join(" ");
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 text-foreground backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" onClick={closeMenu} aria-label="Producer Battles home">
           <Image
@@ -62,7 +55,7 @@ export default function Navigation() {
             width={64}
             height={64}
             priority
-            className="h-auto w-16"
+            className="h-auto w-16 dark:invert"
           />
         </Link>
 
@@ -71,7 +64,7 @@ export default function Navigation() {
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
-          className="flex items-center justify-center text-3xl leading-none transition hover:text-neutral-500 md:hidden"
+          className="flex items-center justify-center text-3xl leading-none text-foreground transition hover:text-muted-foreground md:hidden"
         >
           {isOpen ? "×" : "☰"}
         </button>
@@ -106,6 +99,7 @@ export default function Navigation() {
               </Link>
             ) : null}
 
+            <ThemeToggle />
             <UserButton />
           </Show>
 
@@ -114,7 +108,7 @@ export default function Navigation() {
               <SignInButton mode="modal">
                 <button
                   type="button"
-                  className="text-sm font-medium text-neutral-500 transition hover:text-black"
+                  className="text-sm font-medium text-muted-foreground transition hover:text-foreground"
                 >
                   Sign in
                 </button>
@@ -123,7 +117,7 @@ export default function Navigation() {
               <SignUpButton mode="modal">
                 <button
                   type="button"
-                  className="rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800"
+                  className="rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition hover:opacity-80"
                 >
                   Join
                 </button>
@@ -134,7 +128,7 @@ export default function Navigation() {
       </div>
 
       {isOpen ? (
-        <div className="border-t border-neutral-200 bg-white px-6 py-5 md:hidden">
+        <div className="border-t border-border bg-background px-6 py-5 md:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => {
               if (link.signedInOnly) {
@@ -174,7 +168,8 @@ export default function Navigation() {
                 </Link>
               ) : null}
 
-              <div className="pt-2">
+              <div className="flex items-center gap-4 pt-2">
+                <ThemeToggle />
                 <UserButton />
               </div>
             </Show>
@@ -185,7 +180,7 @@ export default function Navigation() {
                   <button
                     type="button"
                     onClick={closeMenu}
-                    className="rounded-full border border-neutral-300 px-5 py-3 text-sm font-semibold text-black transition hover:bg-neutral-100"
+                    className="rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
                   >
                     Sign in
                   </button>
@@ -195,7 +190,7 @@ export default function Navigation() {
                   <button
                     type="button"
                     onClick={closeMenu}
-                    className="rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
+                    className="rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition hover:opacity-80"
                   >
                     Join
                   </button>

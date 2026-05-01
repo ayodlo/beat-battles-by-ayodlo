@@ -8,15 +8,24 @@ const { buttons, tos } = BUTTONS_CONFIG.hero;
 
 export default function Intro() {
   return (
-    <div className="border border-black">
+    <div className="w-full">
+      {/* Video */}
       <HomeVideo />
+
+      {/* Content */}
       <SectionContainer>
-        <SectionHeading>Beat battles every two weeks</SectionHeading>
-        <p>
-          Submit your best work and compete against producers worldwide. Listen,
-          vote, and discover the next generation of beat makers.
-        </p>
-        <ButtonGroup buttons={buttons} tos={tos} />
+        <div className="mx-auto max-w-3xl text-center">
+          <SectionHeading>Beat battles every two weeks</SectionHeading>
+
+          <p className="mt-5 text-base text-neutral-500 md:text-lg dark:text-white/60">
+            Submit your best work and compete against producers worldwide.
+            Listen, vote, and discover the next generation of beat makers.
+          </p>
+
+          <div className="mt-8 flex justify-center">
+            <ButtonGroup buttons={buttons} tos={tos} />
+          </div>
+        </div>
       </SectionContainer>
     </div>
   );

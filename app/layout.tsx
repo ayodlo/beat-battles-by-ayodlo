@@ -5,6 +5,7 @@ import "./globals.css";
 
 import Navigation from "@/components/Navigation/Navigation";
 import Footer from "@/components/Footer/Footer";
+import ThemeProvider from "@/components/theme/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,17 +29,24 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} bg-white text-black antialiased transition-colors dark:bg-black dark:text-white`}
         >
-          <div className="flex min-h-screen flex-col">
-            <Navigation />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange={false}
+          >
+            <div className="flex min-h-screen flex-col">
+              <Navigation />
 
-            <div className="flex-1">{children}</div>
+              <div className="flex-1">{children}</div>
 
-            <Footer />
-          </div>
+              <Footer />
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

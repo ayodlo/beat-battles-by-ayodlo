@@ -15,20 +15,20 @@ export default async function SubmitPage() {
   });
 
   return (
-    <main className="px-6 py-8">
-      <ThisWeek />
+    <main className="bg-background px-6 py-16 text-foreground">
+      <div className="mx-auto max-w-5xl space-y-20">
+        <ThisWeek />
 
-      {battle?.endsAt ? (
-        <section>
+        {battle?.endsAt ? (
           <CountdownTimer
             targetDate={battle.endsAt}
             label="Submissions close in"
           />
-        </section>
-      ) : null}
+        ) : null}
 
-      <Upload />
-      <ListenVote />
+        <Upload />
+        <ListenVote />
+      </div>
     </main>
   );
 }

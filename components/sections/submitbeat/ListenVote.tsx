@@ -30,10 +30,10 @@ export default async function ListenVote() {
   if (!battle) {
     return (
       <SectionContainer>
-        <div className="space-y-4">
-          <p className="text-center text-sm font-semibold">Entries</p>
+        <div className="max-w-2xl space-y-4">
+          <p className="text-sm font-semibold text-muted-foreground">Entries</p>
           <SectionHeading>Listen and vote</SectionHeading>
-          <p className="text-gray-600">No active battle found.</p>
+          <p className="text-muted-foreground">No active battle found.</p>
         </div>
       </SectionContainer>
     );
@@ -48,29 +48,31 @@ export default async function ListenVote() {
   return (
     <SectionContainer>
       <section className="space-y-8">
-        <div className="space-y-3">
-          <p className="text-center text-sm font-semibold">Entries</p>
+        <div className="max-w-2xl space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground">Entries</p>
           <SectionHeading>Listen and vote</SectionHeading>
-          <p>Every beat gets heard. Every vote counts.</p>
+          <p className="text-muted-foreground">
+            Every beat gets heard. Every vote counts.
+          </p>
         </div>
 
         {battle.submissions.length === 0 ? (
-          <p className="text-gray-600">No submissions yet.</p>
+          <p className="text-muted-foreground">No submissions yet.</p>
         ) : (
           <div className="space-y-6">
             {battle.submissions.map((submission) => (
               <article
                 key={submission.id}
-                className="space-y-4 rounded-xl border border-gray-200 p-5"
+                className="space-y-4 rounded-2xl border border-border bg-card p-5 text-card-foreground"
               >
                 <div className="space-y-1">
                   <h3 className="font-semibold">{submission.fileName}</h3>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     by {submission.username || "Anonymous"}
                   </p>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Submitted {new Date(submission.createdAt).toLocaleString()}
                   </p>
                 </div>

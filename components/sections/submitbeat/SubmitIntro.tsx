@@ -1,12 +1,15 @@
 import SectionContainer from "@/components/SectionContainer/SectionContainer";
 import SectionHeading from "@/components/SectionHeading/SectionHeading";
-import React from "react";
 
 export default function SubmitIntro() {
   return (
     <SectionContainer>
-      <SectionHeading classname="text-center">Submit your beat</SectionHeading>
-      <p>This week&apos;s battle waits for no one. Make your move.</p>
+      <div className="max-w-2xl space-y-4">
+        <SectionHeading>Submit your beat</SectionHeading>
+        <p className="text-muted-foreground">
+          This week&apos;s battle waits for no one. Make your move.
+        </p>
+      </div>
     </SectionContainer>
   );
 }

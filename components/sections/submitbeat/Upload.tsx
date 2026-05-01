@@ -215,47 +215,53 @@ export default function Upload() {
 
   return (
     <SectionContainer>
-      <SectionHeading>Drop your beat here</SectionHeading>
+      <div className="max-w-2xl space-y-5">
+        <SectionHeading>Drop your beat here</SectionHeading>
 
-      {isCheckingBattle ? (
-        <p className="text-gray-500">Checking battle status...</p>
-      ) : !battle ? (
-        <p className="font-medium text-gray-500">
-          No battle is currently open for submissions.
-        </p>
-      ) : battle.status === "closed" ? (
-        <p className="font-medium text-gray-500">This battle is closed.</p>
-      ) : hasSubmitted ? (
-        <p className="font-medium text-green-500">
-          You have already submitted a beat for this week.
-        </p>
-      ) : (
-        <>
-          <p>WAV or MP3 files only. Keep it under 10 MB.</p>
+        {isCheckingBattle ? (
+          <p className="text-muted-foreground">Checking battle status...</p>
+        ) : !battle ? (
+          <p className="font-medium text-muted-foreground">
+            No battle is currently open for submissions.
+          </p>
+        ) : battle.status === "closed" ? (
+          <p className="font-medium text-muted-foreground">
+            This battle is closed.
+          </p>
+        ) : hasSubmitted ? (
+          <p className="font-medium text-emerald-600 dark:text-emerald-400">
+            You have already submitted a beat for this week.
+          </p>
+        ) : (
+          <>
+            <p className="text-muted-foreground">
+              WAV or MP3 files only. Keep it under 10 MB.
+            </p>
 
-          {alert ? (
-            <ValidationAlert message={alert.message} type={alert.type} />
-          ) : null}
+            {alert ? (
+              <ValidationAlert message={alert.message} type={alert.type} />
+            ) : null}
 
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <input
-              accept=".wav,.mp3,audio/wav,audio/mpeg"
-              className="rounded-md bg-gray-200 p-2 font-bold"
-              type="file"
-              onChange={handleChange}
-              disabled={isSubmitting}
-            />
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              <input
+                accept=".wav,.mp3,audio/wav,audio/mpeg"
+                className="rounded-xl border border-border bg-card p-3 text-sm font-medium text-card-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-foreground file:px-4 file:py-2 file:text-background disabled:cursor-not-allowed disabled:opacity-50"
+                type="file"
+                onChange={handleChange}
+                disabled={isSubmitting}
+              />
 
-            <button
-              className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit Beat"}
-            </button>
-          </form>
-        </>
-      )}
+              <button
+                className="w-fit rounded-xl bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Beat"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
     </SectionContainer>
   );
 }
