@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type CountdownTimerProps = {
   targetDate: string | Date;
@@ -33,7 +33,7 @@ export default function CountdownTimer({
   targetDate,
   label = "Submissions close in",
 }: CountdownTimerProps) {
-  const endDate = new Date(targetDate);
+  const endDate = useMemo(() => new Date(targetDate), [targetDate]);
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(endDate));
 
   useEffect(() => {

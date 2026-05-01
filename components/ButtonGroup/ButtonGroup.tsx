@@ -1,7 +1,6 @@
 import { BUTTONS_CONFIG } from "@/app/constants";
 export default function ButtonGroup({
   buttons,
-  tos,
   type = "primary",
 }: {
   buttons: string[];

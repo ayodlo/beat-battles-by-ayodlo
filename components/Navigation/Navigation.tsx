@@ -4,13 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import {
-  Show,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 
 const adminUserIds =
@@ -26,8 +20,10 @@ const navLinks = [
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
 
+  const isSignedIn = isLoaded && !!user;
+  const isSignedOut = isLoaded && !user;
   const isAdmin = user ? adminUserIds.includes(user.id) : false;
 
   function closeMenu() {
@@ -71,14 +67,8 @@ export default function Navigation() {
 
         <div className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => {
-            if (link.signedInOnly) {
-              return (
-                <Show key={link.href} when="signed-in">
-                  <Link href={link.href} className={getLinkClass(link.href)}>
-                    {link.label}
-                  </Link>
-                </Show>
-              );
+            if (link.signedInOnly && !isSignedIn) {
+              return null;
             }
 
             return (
@@ -92,18 +82,20 @@ export default function Navigation() {
             );
           })}
 
-          <Show when="signed-in">
-            {isAdmin ? (
-              <Link href="/admin" className={getLinkClass("/admin")}>
-                Admin
-              </Link>
-            ) : null}
+          {isSignedIn ? (
+            <>
+              {isAdmin ? (
+                <Link href="/admin" className={getLinkClass("/admin")}>
+                  Admin
+                </Link>
+              ) : null}
 
-            <ThemeToggle />
-            <UserButton />
-          </Show>
+              <ThemeToggle />
+              <UserButton />
+            </>
+          ) : null}
 
-          <Show when="signed-out">
+          {isSignedOut ? (
             <div className="flex items-center gap-3">
               <SignInButton mode="modal">
                 <button
@@ -123,7 +115,7 @@ export default function Navigation() {
                 </button>
               </SignUpButton>
             </div>
-          </Show>
+          ) : null}
         </div>
       </div>
 
@@ -131,18 +123,8 @@ export default function Navigation() {
         <div className="border-t border-border bg-background px-6 py-5 md:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => {
-              if (link.signedInOnly) {
-                return (
-                  <Show key={link.href} when="signed-in">
-                    <Link
-                      href={link.href}
-                      onClick={closeMenu}
-                      className={getLinkClass(link.href)}
-                    >
-                      {link.label}
-                    </Link>
-                  </Show>
-                );
+              if (link.signedInOnly && !isSignedIn) {
+                return null;
               }
 
               return (
@@ -157,24 +139,26 @@ export default function Navigation() {
               );
             })}
 
-            <Show when="signed-in">
-              {isAdmin ? (
-                <Link
-                  href="/admin"
-                  onClick={closeMenu}
-                  className={getLinkClass("/admin")}
-                >
-                  Admin
-                </Link>
-              ) : null}
+            {isSignedIn ? (
+              <>
+                {isAdmin ? (
+                  <Link
+                    href="/admin"
+                    onClick={closeMenu}
+                    className={getLinkClass("/admin")}
+                  >
+                    Admin
+                  </Link>
+                ) : null}
 
-              <div className="flex items-center gap-4 pt-2">
-                <ThemeToggle />
-                <UserButton />
-              </div>
-            </Show>
+                <div className="flex items-center gap-4 pt-2">
+                  <ThemeToggle />
+                  <UserButton />
+                </div>
+              </>
+            ) : null}
 
-            <Show when="signed-out">
+            {isSignedOut ? (
               <div className="flex flex-col gap-3 pt-2">
                 <SignInButton mode="modal">
                   <button
@@ -196,7 +180,7 @@ export default function Navigation() {
                   </button>
                 </SignUpButton>
               </div>
-            </Show>
+            ) : null}
           </div>
         </div>
       ) : null}
