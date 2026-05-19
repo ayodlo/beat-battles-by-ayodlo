@@ -4,16 +4,18 @@ import SectionContainer from "@/components/SectionContainer/SectionContainer";
 export default function Core() {
   const items = [
     {
-      title: "Submit your beat",
-      description: "Upload your best work and enter the battle.",
+      title: "Make a beat",
+      description:
+        "Make a beat based on the current beat battles rules and required sample.",
     },
     {
       title: "Vote on beats",
-      description: "Listen and vote on submissions from other producers.",
+      description:
+        "Listen and vote on one submission from other producers who entered.",
     },
     {
       title: "Explore past battles",
-      description: "Discover winners and revisit past competitions.",
+      description: "Check out previous winners and revisit past competitions.",
     },
   ];
 
@@ -21,7 +23,7 @@ export default function Core() {
     <SectionContainer>
       <div className="mx-auto max-w-5xl text-center">
         <SectionHeading classname="text-center">
-          What makes us different
+          How to join a Beat Battle
         </SectionHeading>
 
         <p className="mt-4 text-sm text-neutral-500 md:text-base dark:text-white/60">

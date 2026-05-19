@@ -1,12 +1,12 @@
 import CountdownTimer from "@/components/CountdownTimer/CountdownTimer";
-import Core from "@/components/sections/home/Core";
-import Intro from "@/components/sections/home/Intro";
-import Join from "@/components/sections/home/Join";
-import Testimonials from "@/components/sections/home/Testimonials";
-import StayInTheFight from "@/components/sections/home/GetNotified";
-import GetInTouch from "@/components/sections/home/GetInTouch";
-import Questions from "@/components/sections/home/Questions";
-import LatestWinner from "@/components/sections/home/LatestWinner";
+import Core from "@/components/_sections/home/Core";
+import Intro from "@/components/_sections/home/Intro";
+import Join from "@/components/_sections/home/Join";
+import Testimonials from "@/components/_sections/home/Testimonials";
+import StayInTheFight from "@/components/_sections/home/GetNotified";
+import GetInTouch from "@/components/_sections/home/GetInTouch";
+import Questions from "@/components/_sections/home/Questions";
+import LatestWinner from "@/components/_sections/home/LatestWinner";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {

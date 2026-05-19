@@ -5,19 +5,11 @@ export default function GetInTouch() {
   const contactItems = [
     {
       label: "Email",
-      value: "info@beatbattles.com",
-    },
-    {
-      label: "Phone",
-      value: "+1 (555) 123-4567",
-    },
-    {
-      label: "Location",
-      value: "123 Main St, Anytown, USA",
+      value: "theekidfresco@gmail.com",
     },
   ];
 
-  const socials = ["Facebook", "Twitter", "Instagram", "YouTube"];
+  const socials = ["X", "Instagram"];
 
   return (
     <SectionContainer>
@@ -58,7 +50,7 @@ export default function GetInTouch() {
                   key={social}
                   className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-white/10"
                 >
-                  {social}: @beatbattles
+                  {social}: @ayodlobeats
                 </span>
               ))}
             </div>

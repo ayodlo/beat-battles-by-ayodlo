@@ -28,37 +28,34 @@ export default function BattleSubmissions({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/submissions?battleId=${battleId}`)
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok) {
+    const fetchSubmissions = async () => {
+      try {
+        const res = await fetch(`/api/submissions?battleId=${battleId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
           throw new Error(data.error || "Could not load submissions");
         }
 
-        return Promise.all(
-          data.submissions.map((submission: Submission) => {
-            return fetch(
-              `/api/submissions/playback?fileKey=${encodeURIComponent(
-                submission.fileKey,
-              )}`,
-            )
-              .then((res) => res.json())
-              .then((playbackData) => ({
-                ...submission,
-                playbackUrl: playbackData.playbackUrl,
-              }));
+        const submissionsWithPlaybackUrls = await Promise.all(
+          data.submissions?.map(async (submission: Submission) => {
+            const playbackRes = await fetch(
+              `/api/submissions/playback?fileKey=${encodeURIComponent(submission.fileKey)}`,
+            );
+            const playbackData = await playbackRes.json();
+            return { ...submission, playbackUrl: playbackData.playbackUrl };
           }),
         );
-      })
-      .then((submissionsWithPlaybackUrls) => {
+
         setSubmissions(submissionsWithPlaybackUrls);
-      })
-      .catch((err: Error) => {
-        setError(err.message);
-      })
-      .finally(() => {
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    fetchSubmissions();
   }, [battleId]);
 
   function formatDate(date: string) {
@@ -79,7 +76,7 @@ export default function BattleSubmissions({
 
   return (
     <div className="mt-6 space-y-4">
-      {submissions.map((submission) => (
+      {submissions?.map((submission) => (
         <article
           key={submission.id}
           className="rounded-md border border-gray-200 p-4"
