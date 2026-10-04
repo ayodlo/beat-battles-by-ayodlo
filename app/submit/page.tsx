@@ -2,17 +2,15 @@ import CountdownTimer from "@/components/CountdownTimer/CountdownTimer";
 import ListenVote from "@/components/_sections/submitbeat/ListenVote";
 import ThisWeek from "@/components/_sections/submitbeat/ThisWeek";
 import Upload from "@/components/_sections/submitbeat/Upload";
-import { prisma } from "@/lib/prisma";
+import { query, type Battle } from "@/lib/db";
 
 export default async function SubmitPage() {
-  const battle = await prisma.battle.findFirst({
-    where: {
-      status: "open",
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const [battle] = await query<Battle>(
+    `SELECT * FROM "Battle"
+     WHERE "status" = 'open'
+     ORDER BY "createdAt" DESC
+     LIMIT 1`,
+  );
 
   return (
     <main className="bg-background px-6 py-16 text-foreground">

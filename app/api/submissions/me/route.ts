@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { query, type Submission } from "@/lib/db";
 
 export async function GET(req: Request) {
   const { userId } = await auth();
@@ -15,16 +15,12 @@ export async function GET(req: Request) {
       { status: 400 },
     );
   }
-  const submission = await prisma.submission.findUnique({
-    where: {
-      userId_battleId: {
-        userId,
-        battleId,
-      },
-    },
-  });
+  const [submission] = await query<Submission>(
+    `SELECT * FROM "Submission" WHERE "userId" = $1 AND "battleId" = $2`,
+    [userId, battleId],
+  );
   return NextResponse.json({
     hasSubmitted: Boolean(submission),
-    submission,
+    submission: submission ?? null,
   });
 }

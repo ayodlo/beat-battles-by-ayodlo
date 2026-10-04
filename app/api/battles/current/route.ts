@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { query, type Battle } from "@/lib/db";
 
 export function GET() {
-  return prisma.battle
-    .findFirst({
-      where: {
-        status: "open",
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        status: true,
-        endsAt: true,
-      },
-    })
-    .then((battle) => {
+  return query<Pick<Battle, "id" | "title" | "slug" | "status" | "endsAt">>(
+    `SELECT "id", "title", "slug", "status", "endsAt" FROM "Battle"
+     WHERE "status" = 'open'
+     ORDER BY "createdAt" DESC
+     LIMIT 1`,
+  )
+    .then(([battle]) => {
       if (!battle) {
         return NextResponse.json({ battle: null }, { status: 200 });
       }

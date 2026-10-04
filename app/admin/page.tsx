@@ -1,9 +1,15 @@
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-
-type BattleStatus = "open" | "closed";
+import {
+  getSubmissionsWithVotes,
+  newId,
+  query,
+  transaction,
+  type Battle,
+  type BattleStatus,
+  type Vote,
+} from "@/lib/db";
 
 async function createBattle(formData: FormData) {
   "use server";
@@ -19,15 +25,11 @@ async function createBattle(formData: FormData) {
   const endsAt = new Date();
   endsAt.setDate(endsAt.getDate() + 14);
 
-  await prisma.battle.create({
-    data: {
-      title,
-      slug,
-      status: "open",
-      startsAt,
-      endsAt,
-    },
-  });
+  await query(
+    `INSERT INTO "Battle" ("id", "title", "slug", "status", "startsAt", "endsAt", "updatedAt")
+     VALUES ($1, $2, $3, 'open', $4, $5, NOW())`,
+    [newId(), title, slug, startsAt, endsAt],
+  );
 
   revalidatePath("/admin");
   revalidatePath("/submit");
@@ -38,10 +40,10 @@ async function createBattle(formData: FormData) {
 async function updateBattleStatus(id: string, status: BattleStatus) {
   "use server";
 
-  await prisma.battle.update({
-    where: { id },
-    data: { status },
-  });
+  await query(
+    `UPDATE "Battle" SET "status" = $2, "updatedAt" = NOW() WHERE "id" = $1`,
+    [id, status],
+  );
 
   revalidatePath("/admin");
   revalidatePath("/submit");
@@ -52,10 +54,10 @@ async function updateBattleStatus(id: string, status: BattleStatus) {
 async function hideBattleFromHistory(id: string) {
   "use server";
 
-  await prisma.battle.update({
-    where: { id },
-    data: { hiddenFromHistory: true },
-  });
+  await query(
+    `UPDATE "Battle" SET "hiddenFromHistory" = true, "updatedAt" = NOW() WHERE "id" = $1`,
+    [id],
+  );
 
   revalidatePath("/admin");
   revalidatePath("/past-battles");
@@ -65,14 +67,15 @@ async function hideBattleFromHistory(id: string) {
 async function selectWinner(battleId: string, submissionId: string) {
   "use server";
 
-  await prisma.submission.updateMany({
-    where: { battleId },
-    data: { placement: null },
-  });
-
-  await prisma.submission.update({
-    where: { id: submissionId },
-    data: { placement: 1 },
+  await transaction(async (client) => {
+    await client.query(
+      `UPDATE "Submission" SET "placement" = NULL WHERE "battleId" = $1`,
+      [battleId],
+    );
+    await client.query(
+      `UPDATE "Submission" SET "placement" = 1 WHERE "id" = $1`,
+      [submissionId],
+    );
   });
 
   revalidatePath("/admin");
@@ -89,16 +92,21 @@ export default async function AdminPage() {
     redirect("/");
   }
 
-  const battles = await prisma.battle.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      submissions: {
-        include: { votes: true },
-        orderBy: { createdAt: "asc" },
-      },
-      votes: true,
-    },
-  });
+  const battleRows = await query<Battle>(
+    `SELECT * FROM "Battle" ORDER BY "createdAt" DESC`,
+  );
+  const battleIds = battleRows.map((battle) => battle.id);
+  const [submissionsByBattle, votes] = await Promise.all([
+    getSubmissionsWithVotes(battleIds, "asc"),
+    query<Vote>(`SELECT * FROM "Vote" WHERE "battleId" = ANY($1)`, [
+      battleIds,
+    ]),
+  ]);
+  const battles = battleRows.map((battle) => ({
+    ...battle,
+    submissions: submissionsByBattle.get(battle.id) ?? [],
+    votes: votes.filter((vote) => vote.battleId === battle.id),
+  }));
 
   return (
     <main className="bg-background px-6 py-16 text-foreground">

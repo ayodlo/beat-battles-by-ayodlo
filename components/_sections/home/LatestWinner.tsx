@@ -1,24 +1,22 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { query, type Submission } from "@/lib/db";
 import SectionContainer from "@/components/SectionContainer/SectionContainer";
 import SectionHeading from "@/components/SectionHeading/SectionHeading";
 
 export default async function LatestWinner() {
-  const latestWinner = await prisma.submission.findFirst({
-    where: {
-      placement: 1,
-      battle: {
-        hiddenFromHistory: false,
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      battle: true,
-      votes: true,
-    },
-  });
+  const [latestWinner] = await query<
+    Submission & { battleTitle: string; battleSlug: string; voteCount: number }
+  >(
+    `SELECT s.*,
+       b."title" AS "battleTitle",
+       b."slug" AS "battleSlug",
+       (SELECT COUNT(*)::int FROM "Vote" v WHERE v."submissionId" = s."id") AS "voteCount"
+     FROM "Submission" s
+     JOIN "Battle" b ON b."id" = s."battleId"
+     WHERE s."placement" = 1 AND b."hiddenFromHistory" = false
+     ORDER BY s."createdAt" DESC
+     LIMIT 1`,
+  );
 
   if (!latestWinner) {
     return null;
@@ -39,7 +37,7 @@ export default async function LatestWinner() {
           <p className="mt-4 text-neutral-500 dark:text-white/60">
             Winner of{" "}
             <span className="font-semibold text-black dark:text-white">
-              {latestWinner.battle.title}
+              {latestWinner.battleTitle}
             </span>
           </p>
         </div>
@@ -54,12 +52,12 @@ export default async function LatestWinner() {
           </p>
 
           <p className="mt-2 text-sm text-neutral-500 dark:text-white/60">
-            {latestWinner.votes.length} vote
-            {latestWinner.votes.length === 1 ? "" : "s"}
+            {latestWinner.voteCount} vote
+            {latestWinner.voteCount === 1 ? "" : "s"}
           </p>
 
           <Link
-            href={`/past-battles/${latestWinner.battle.slug}`}
+            href={`/past-battles/${latestWinner.battleSlug}`}
             className="mt-5 inline-flex rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-white/80"
           >
             View Results

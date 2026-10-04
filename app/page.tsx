@@ -7,20 +7,17 @@ import StayInTheFight from "@/components/_sections/home/GetNotified";
 import GetInTouch from "@/components/_sections/home/GetInTouch";
 import Questions from "@/components/_sections/home/Questions";
 import LatestWinner from "@/components/_sections/home/LatestWinner";
-import { prisma } from "@/lib/prisma";
+import { query, type Battle } from "@/lib/db";
 
 export default async function Home() {
-  const currentBattle = await prisma.battle.findFirst({
-    where: {
-      status: "open",
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      submissions: true,
-    },
-  });
+  const [currentBattle] = await query<Battle & { submissionCount: number }>(
+    `SELECT b.*,
+       (SELECT COUNT(*)::int FROM "Submission" s WHERE s."battleId" = b."id") AS "submissionCount"
+     FROM "Battle" b
+     WHERE b."status" = 'open'
+     ORDER BY b."createdAt" DESC
+     LIMIT 1`,
+  );
 
   return (
     <main className="px-6 py-8">
@@ -34,8 +31,8 @@ export default async function Home() {
             <h2 className="mt-2 text-3xl font-bold">{currentBattle.title}</h2>
 
             <p className="mt-2 text-neutral-500">
-              {currentBattle.submissions.length} submission
-              {currentBattle.submissions.length === 1 ? "" : "s"} so far.
+              {currentBattle.submissionCount} submission
+              {currentBattle.submissionCount === 1 ? "" : "s"} so far.
             </p>
 
             <div className="mt-6">

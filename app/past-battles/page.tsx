@@ -1,19 +1,17 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getSubmissionsWithVotes, query, type Battle } from "@/lib/db";
 
 export default async function PastBattlesPage() {
-  const battles = await prisma.battle.findMany({
-    where: {
-      status: "closed",
-    },
-    include: {
-      submissions: {
-        include: {
-          votes: true,
-        },
-      },
-    },
-  });
+  const battleRows = await query<Battle>(
+    `SELECT * FROM "Battle" WHERE "status" = 'closed'`,
+  );
+  const submissionsByBattle = await getSubmissionsWithVotes(
+    battleRows.map((battle) => battle.id),
+  );
+  const battles = battleRows.map((battle) => ({
+    ...battle,
+    submissions: submissionsByBattle.get(battle.id) ?? [],
+  }));
 
   return (
     <main className="bg-background px-6 py-16 text-foreground">

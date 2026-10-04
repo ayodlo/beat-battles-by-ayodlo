@@ -1,6 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import {
+  newId,
+  query,
+  type Battle,
+  type Submission,
+  type Vote,
+} from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -20,9 +26,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const battle = await prisma.battle.findUnique({
-      where: { id: battleId },
-    });
+    const [battle] = await query<Battle>(
+      `SELECT * FROM "Battle" WHERE "id" = $1`,
+      [battleId],
+    );
 
     if (!battle) {
       return NextResponse.json({ error: "Battle not found" }, { status: 404 });
@@ -35,11 +42,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const votedSubmission = await prisma.submission.findUnique({
-      where: {
-        id: submissionId,
-      },
-    });
+    const [votedSubmission] = await query<Submission>(
+      `SELECT * FROM "Submission" WHERE "id" = $1`,
+      [submissionId],
+    );
 
     if (!votedSubmission || votedSubmission.battleId !== battleId) {
       return NextResponse.json(
@@ -55,22 +61,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const vote = await prisma.vote.upsert({
-      where: {
-        userId_battleId: {
-          userId,
-          battleId,
-        },
-      },
-      update: {
-        submissionId,
-      },
-      create: {
-        userId,
-        battleId,
-        submissionId,
-      },
-    });
+    const [vote] = await query<Vote>(
+      `INSERT INTO "Vote" ("id", "userId", "battleId", "submissionId")
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT ("userId", "battleId")
+       DO UPDATE SET "submissionId" = EXCLUDED."submissionId", "updatedAt" = NOW()
+       RETURNING *`,
+      [newId(), userId, battleId, submissionId],
+    );
 
     return NextResponse.json({ vote }, { status: 200 });
   } catch (error) {

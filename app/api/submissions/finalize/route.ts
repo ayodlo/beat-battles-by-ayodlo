@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { newId, query, type Submission } from "@/lib/db";
 
 type RequestBody = {
   battleId: string;
@@ -27,14 +27,10 @@ export async function POST(req: Request) {
     user.emailAddresses[0]?.emailAddress ||
     "anonymous";
 
-  const existingSubmission = await prisma.submission.findUnique({
-    where: {
-      userId_battleId: {
-        userId,
-        battleId: body.battleId,
-      },
-    },
-  });
+  const [existingSubmission] = await query<Submission>(
+    `SELECT * FROM "Submission" WHERE "userId" = $1 AND "battleId" = $2`,
+    [userId, body.battleId],
+  );
 
   if (existingSubmission) {
     return NextResponse.json(
@@ -43,18 +39,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const submission = await prisma.submission.create({
-    data: {
+  const [submission] = await query<Submission>(
+    `INSERT INTO "Submission"
+       ("id", "userId", "username", "battleId", "fileKey", "fileUrl", "fileName", "fileSize", "mimeType")
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     RETURNING *`,
+    [
+      newId(),
       userId,
       username,
-      battleId: body.battleId,
-      fileKey: body.fileKey,
-      fileUrl: body.fileUrl,
-      fileName: body.fileName,
-      fileSize: body.fileSize,
-      mimeType: body.mimeType,
-    },
-  });
+      body.battleId,
+      body.fileKey,
+      body.fileUrl,
+      body.fileName,
+      body.fileSize,
+      body.mimeType,
+    ],
+  );
 
   return NextResponse.json({ submission });
 }

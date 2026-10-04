@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { getSubmissionsWithVotes, query, type Battle } from "@/lib/db";
 
 type PastBattleDetailPageProps = {
   params: Promise<{
@@ -12,24 +12,18 @@ export default async function PastBattleDetailPage({
 }: PastBattleDetailPageProps) {
   const { slug } = await params;
 
-  const battle = await prisma.battle.findUnique({
-    where: {
-      slug,
-    },
-    include: {
-      submissions: {
-        include: {
-          votes: true,
-        },
-      },
-    },
-  });
+  const [battle] = await query<Battle>(
+    `SELECT * FROM "Battle" WHERE "slug" = $1`,
+    [slug],
+  );
 
   if (!battle) {
     notFound();
   }
 
-  const sortedSubmissions = battle.submissions
+  const submissionsByBattle = await getSubmissionsWithVotes([battle.id]);
+
+  const sortedSubmissions = (submissionsByBattle.get(battle.id) ?? [])
     .slice()
     .sort((a, b) => b.votes.length - a.votes.length);
 

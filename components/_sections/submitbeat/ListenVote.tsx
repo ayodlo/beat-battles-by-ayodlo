@@ -1,31 +1,23 @@
 import { auth } from "@clerk/nextjs/server";
 import SectionContainer from "@/components/SectionContainer/SectionContainer";
 import SectionHeading from "@/components/SectionHeading/SectionHeading";
-import { prisma } from "@/lib/prisma";
+import {
+  getSubmissionsWithVotes,
+  query,
+  type Battle,
+  type Vote,
+} from "@/lib/db";
 import VoteButton from "@/components/VoteButton/VoteButton";
 
 export default async function ListenVote() {
   const { userId } = await auth();
 
-  const battle = await prisma.battle.findFirst({
-    where: {
-      status: "open",
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      submissions: {
-        orderBy: {
-          createdAt: "asc",
-        },
-        include: {
-          votes: true,
-        },
-      },
-      votes: true,
-    },
-  });
+  const [battle] = await query<Battle>(
+    `SELECT * FROM "Battle"
+     WHERE "status" = 'open'
+     ORDER BY "createdAt" DESC
+     LIMIT 1`,
+  );
 
   if (!battle) {
     return (
@@ -39,9 +31,15 @@ export default async function ListenVote() {
     );
   }
 
-  const userVote = userId
-    ? battle.votes.find((vote) => vote.userId === userId)
-    : null;
+  const submissions =
+    (await getSubmissionsWithVotes([battle.id], "asc")).get(battle.id) ?? [];
+
+  const [userVote] = userId
+    ? await query<Vote>(
+        `SELECT * FROM "Vote" WHERE "battleId" = $1 AND "userId" = $2`,
+        [battle.id, userId],
+      )
+    : [];
 
   const isVotingOpen = battle.status === "open";
 
@@ -56,11 +54,11 @@ export default async function ListenVote() {
           </p>
         </div>
 
-        {battle.submissions.length === 0 ? (
+        {submissions.length === 0 ? (
           <p className="text-muted-foreground">No submissions yet.</p>
         ) : (
           <div className="space-y-6">
-            {battle.submissions.map((submission) => (
+            {submissions.map((submission) => (
               <article
                 key={submission.id}
                 className="space-y-4 rounded-2xl border border-border bg-card p-5 text-card-foreground"
