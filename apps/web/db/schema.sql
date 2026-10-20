@@ -1,3 +1,9 @@
+-- Start pgsql cli: docker exec -it beat-battles-db psql -U postgres -d beat_battles
+-- To see your databases: \l
+-- To see your tables: \dt
+-- To see your schemas: \dn
+-- To exit: \q
+
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
