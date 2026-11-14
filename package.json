@@ -1,0 +1,12 @@
+{
+  "name": "producerbattles",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @producerbattles/web",
+    "dev:ws": "npm run dev -w @producerbattles/ws-server"
+  }
+}
