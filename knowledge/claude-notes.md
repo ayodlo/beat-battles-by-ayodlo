@@ -96,6 +96,68 @@ Habits to start with: /clear often, name your files, give a way to verify, and u
 
 I can go deeper on any of these, such as setting up a CLAUDE.md, hooks, or an allowlist for this repo.
 
-✻ Worked for 14s · done 10:55 PM
+Viewing Token Usage in Claude Code
 
-※ recap: You asked how to update Claude Code (already on latest, 2.1.325) and then for a guide to using it efficiently, which I delivered. Next, tell me whether you'd like me to set up a CLAUDE.md, hooks, or a permissions allowlist for this repo. (disable recaps in /config)
+Details vary by version and plan, so if something below doesn't match what you see, run /help to check the commands your version has.
+
+Commands inside Claude Code
+
+Command: /usage
+What it shows: Your plan's usage limits and how
+much you've used (session and weekly windows)
+on subscription plans.
+────────────────────────────────────────
+Command: /cost
+What it shows: Token usage and cost for the
+current session. This is most meaningful on
+API billing. On a subscription it shows
+tokens but not a bill.
+────────────────────────────────────────
+Command: /context
+What it shows: What's filling the current
+context window: system prompt, tools, MCP
+definitions, CLAUDE.md, messages. This is the
+best tool for finding waste.
+────────────────────────────────────────
+Command: /status
+What it shows: Account, model, login method and
+plan info.
+────────────────────────────────────────
+Command: /model
+What it shows: Switch models, which changes how
+fast you burn through limits.
+
+Live display: the status line
+
+Run /statusline and describe what you want, for example "show model, context % used, and session cost". It then sits at the bottom of the terminal, so you can watch context fill up without running a command.
+
+Average usage
+
+Claude Code doesn't have a built-in "average per task" view. Options:
+
+- Session transcripts: each session is stored as JSONL under ~/.claude/projects/ (for you, C:\Users\theek\.claude\projects\...). Each assistant message records token counts.
+- Community tools: ccusage (npx ccusage) reads those transcripts and reports daily, weekly, monthly and per-session totals, including cache tokens. It's third-party, so review it before trusting it.
+- API users: the Anthropic Console shows usage and spend by day, model and API key, with CSV export.
+
+Limits
+
+- Subscription (Pro/Max): limits are usage-based, not a fixed token count. There's typically a rolling session window (resetting every few hours) plus a weekly cap. Heavier models and long contexts use more of it. Check /usage and your account's usage settings on claude.ai for the current numbers, because they change.
+- API: limits are rate limits (requests, input tokens and output tokens per minute) tied to your usage tier, visible in the Console under limits. Spend is pay-per-token.
+- Context window: a separate limit per conversation. When it fills, Claude auto-compacts the history, which loses detail.
+
+Concepts worth knowing
+
+- Input vs. output tokens: output costs several times more per token than input, but input volume is usually much larger because the full conversation is re-sent every turn.
+- Prompt caching: repeated context (system prompt, CLAUDE.md, earlier messages) is cached and billed at a steep discount, but the cache expires after a period of idleness. A long pause means the next turn re-reads everything at full price.
+- Thinking tokens: extended reasoning counts as output. Higher effort settings use more.
+- What inflates usage: big file reads, verbose command output, many MCP servers, subagents (each has its own context), and long sessions.
+- Tool schemas count: every enabled MCP server's tool list is sent on every request.
+
+A simple monitoring routine
+
+1. Set up /statusline to show context % and cost.
+2. Check /context when a session feels sluggish or expensive.
+3. Check /usage at the start of a heavy day to see your headroom.
+4. If you want history and averages, run npx ccusage weekly.
+
+I can set up a status line for you, or look at your transcripts to compute your averages if you'd like.

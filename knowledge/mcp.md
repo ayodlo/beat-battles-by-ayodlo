@@ -84,3 +84,9 @@ What's connected in this session
 You already have a few built in through claude.ai: Claude Docs and Google Drive (not yet authenticated). Run /mcp to see them and their status.
 
 I can help you pick one for this project (Postgres is the most useful here) and walk through adding it.
+
+Scan this repo and provide an explanation of the reasoning
+for it's system architecture decisions in a way that would
+fulfill a system design interview question. The goal is to
+use this repository as an example for a system design
+interview.
