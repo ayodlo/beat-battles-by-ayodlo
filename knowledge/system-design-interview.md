@@ -221,3 +221,182 @@ Fix: See section 9.
 1. Scale and failure modes (8 min): CDN, queue, caching, real-time.
 
 I can write this up as a shareable doc or one-page cheat sheet, draw an architecture diagram, or write a set of follow-up interview questions with model answers. I can also fix the issues in section 8 if you want to use the code as a "find the bugs" exercise.
+
+/////////// SHORT //////////
+Designing "Beat Battles": a weekly producer competition
+
+1. Frame the problem (about 5 min)
+
+Prompt: Producers upload a beat to a weekly battle. The community listens and votes. An admin crowns a winner, and past battles stay browsable.
+
+What shapes the architecture:
+
+- Big files, small metadata. Audio is around 8 MB per file. A battle, submission or vote row is a few hundred bytes. Design the two paths separately.
+- Mostly reads. Browsing and listening far outnumber uploads and votes.
+- Correctness matters for a few rules: one entry per user per battle, one vote per user per battle, and no voting for yourself.
+- Small team, low budget. Lean on managed services and keep one deployable.
+
+Rough numbers (my assumptions): 5k entries a week is about 40 GB/week of storage, which is cheap. 50k voters × 20 listens × 8 MB isnd that's the real cost driver.Votes peak at around 50 writes/sec, which is trivial for Postgres. The scaling problem is bandwidth, not compute or the dat
+
+2. High-level architecture
+
+Browser (Next.js / React 19)
+│
+├─► Next.js monolith ──► Postgry rules)
+│ ├ Server Components (reads, direct SQL)
+│ ├ Route Handlers /api/\* (
+│ └ Server Actions (admin mutations + revalidatePath)
+│
+├─► Clerk (identity, sessions)
+│
+└─► S3 directly (presigned PUT for upload, presigned GET for playback)
+
+3. Each decision and why
+
+Decision: One Next.js app (monolith)
+Reasoning: One deployable holds Shis scale, splitting into services
+adds network hops and operational work and buys nothing.
+Trade-off accepted: You can't sca's fine until media processing or
+real-time features need it.
+─────────────────────────────────
+Decision: Server Components query the DB directly
+Reasoning: Read-heavy pages rendetra API layer, and revalidatePath
+after admin changes keeps cached pages fresh.
+Trade-off accepted: Reads are tieg model.
+────────────────────────────────────────
+Decision: Postgres, not NoSQL
+Reasoning: The data is relational (Battle → Submission → Vote), and the hard requirements are
+integrity rules. A relational dtively.
+Trade-off accepted: Scaling writes horizontally is harder, but the write rate doesn't need it.
+─────────────────────────────────
+Decision: Raw pg instead of Prisma (commit 99ec073a)
+Reasoning: Full control over SQL er dependencies, and no ORM
+cold-start overhead.
+Trade-off accepted: No generated igrations are hand-written in
+db/schema.sql.
+─────────────────────────────────
+Decision: Clerk for auth
+Reasoning: Identity is a solved p or session security yourself is
+pure risk.
+Trade-off accepted: Vendor lock-itable.
+────────────────────────────────────────
+Decision: No User table; username
+Reasoning: Avoids a join and a webhook sync job with Clerk.
+Trade-off accepted: The name goeseir account.
+────────────────────────────────────────
+Decision: S3 plus presigned URLs
+Reasoning: Audio never passes through the app server, which avoids serverless body-size and
+timeout limits and app bandwidtvate and access is granted per
+request by signing.
+Trade-off accepted: Integrity cheize" step, which has to be done
+carefully (see section 5).
+─────────────────────────────────
+Decision: UTC pinned in the DB driver (lib/db.ts)
+Reasoning: Deadlines and countdowand client. The session timezoneand
+the TIMESTAMP parser are both f
+Trade-off accepted: None really. It's just discipline.
+─────────────────────────────────
+Decision: npm workspaces monorepo with an empty apps/ws-server
+Reasoning: Leaves room for a realoard) that has a different load
+profile from request/response work.
+Trade-off accepted: It's a placehxists yet.
+────────────────────────────────────────
+Decision: Docker Compose for Post
+Reasoning: Reproducible local setup, with the port bound to localhost only.
+Trade-off accepted: —
+
+4. Deep dives (about 12 min)
+
+A. Upload is a three-step handshaS3 → finalize)
+
+1. create: check auth, the MIME allowlist, size ≤ 10 MB and that the user hasn't already entered.
+   Return a 60-second presigned Psubmissions/{battleId}/{userId}/{ts}-{sanitizedName}.
+2. The browser PUTs the file stra
+3. finalize: insert the Submission row.
+
+Why: the short expiry limits abuse, the key prefix keeps users' files isolated, and the app
+server only handles small JSON re
+
+B. Vote integrity is enforced by ion checks
+
+- UNIQUE(userId, battleId) on Vote, plus INSERT … ON CONFLICT DO UPDATE.
+- It's atomic and idempotent, so ce, and changing your vote is thesame operation as casting it.
+- The application checks run in os open, submission belongs to thebattle, not your own beat) and come before the upsert.
+- Point to make: "check then inses under concurrent requests. Aconstraint can't be raced.
+
+C. Playback
+
+- The server signs a GET URL thatthe bucket never has to be public.
+
+D. Admin
+
+- /admin checks the user against an ADMIN_USER_IDS env allowlist. Server Actions run winner
+  selection inside a transaction(and sets the new one, so ahalf-finished state is never visible.
+
+5. Weaknesses I'd raise myself
+
+Interviewers reward this part. These are all present in the current code:
+
+1. Finalize trusts the client. It exists in S3 or that fileKey isunder the caller's own prefix, so a user could claim someone else's file. Fix: call HeadObject
+   before inserting and build the
+2. Finalize doesn't check that the battle is open. The vote route does, so this is inconsistent.
+3. Declared size and type aren't ned POST with content-length-range.
+4. Playback signs any key for any logged-in user. Fix: confirm the key exists in Submission.
+5. Duplicate submit is check-thenll prevents duplicates, but a racereturns a 500 instead of a 409.
+6. endsAt isn't enforced. Closingtep. Fix: a server-side deadlinecheck plus a scheduled job to auto-close.
+7. Vote counts are computed by loOUP BY submissionId, and addindexes on Submission(battleId), Vote(battleId, submissionId) and Battle(status, createdAt).
+8. Broken wiring. ListenVote.tsx:he route is at/api/submissions/playback.
+9. Middleware protects routes thapload, /profile). The APIs are only safe because each handler calls auth() itself.
+
+10. How it would scale (about 8 min)
+
+11. CDN for audio (CloudFront with signed cookies). This is the biggest win, since egress is the
+    cost.
+12. Async processing. An S3 event goes to SQS, and a worker validates the audio, extracts
+    duration, makes a preview clip duplicates.
+13. Real-time leaderboard in ws-server, fed by Postgres LISTEN/NOTIFY or Redis pub/sub. Product
+    trade-off: live counts encouraight hide them until the battlecloses.
+14. Read scaling. Use ISR or cachiry first, then read replicas, andPgBouncer because each serverless instance opens its own pool.
+15. Abuse controls. Rate limits, Cge gates. Clerk proves who someoneis, but one person can still create many accounts.
+
+16. Closing summary
+
+"I built a monolith because the team and the traffic are small. The two things that actually need
+careful design are both handled as bypass the app through presigned S3 URLs, and the voting rules are enforced by database constraints instead of application
+checks. The known gaps are all in deadline enforcement, and thescaling path is a CDN first, then a processing queue, then real-time."
+
+---
+
+I can also turn this into a shareable one-page cheat sheet with an architecture diagram, or fix
+the weaknesses in section 5 if yoready solved.
+
+✻ Cogitated for 46s · done 10:19 PM
+
+❯ make the one-page cheat sheet witnd place it in the root directoryof this repo
+
+● Write(~\OneDrive\Desktop\projects\Javascript\beat-battles-by-ayodlo\SYSTEM_DESIGN_CHEATSHEET.md)
+Wrote 94 lines to~\OneDrive\Desktop\projects\Javascript\beat-battles-by-ayodlo\SYSTEM_DESIGN_CHEATSHEET.md
+
+# Beat Battles: System Des
+
+> **Prompt:** Producers upe. The community listens and
+> votes. An admin crowns a winner, and past battles stay browsable.
+
+## Core insight
+
+**Big files, small metadata. Bandwidth is the scaling problem, not compute.**
+Estimate: 5k entries/week s × 20 listens × 8 MB ≈ **8
+TB/week of egress**. Votes peak at about 50 writes/sec, which Postgres handles easi
+… +87 lines (~4 KB)
+
+I made the cheat sheet at C:\Userects\Javascript\beat-battles-by-ayodlo\SYSTEM_DESIGN_CHEATSHEET.md, in the repo root.
+
+The diagrams are Mermaid code blocks. They render as real diagrams on GitHub and in VS Code's
+Markdown preview, but other viewe haven't previewed the file, so Ihaven't seen the diagrams render yet. There are two of them:
+
+- Architecture: browser, the NextS3, with a thick arrow for audiogoing straight from the browser to S3 and skipping the app server.
+- Upload flow: the create, directps.
+
+The rest of the page covers the ce bottleneck), a table of eachdecision with its reasoning and trade-off, the data model, the 8 known gaps, the scaling path, a 45-minute interview plan and a cl
+
+I haven't committed it. It's sittedge/mcp.md.
